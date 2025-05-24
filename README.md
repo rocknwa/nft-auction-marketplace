@@ -1,7 +1,7 @@
 # NFT Auction Marketplace
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Solidity Version](https://img.shields.io/badge/Solidity-%5E0.8.3-blue)
+![Solidity Version](https://img.shields.io/badge/Solidity-%5E0.8.20-blue)
 
 A decentralized marketplace for auctioning ERC721 NFTs, built with Solidity and powered by the Ethereum blockchain. This smart contract enables users to create auctions, place bids, withdraw bids, end auctions, and cancel auctions securely, with features like auction time extension and reentrancy protection.
 
