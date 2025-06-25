@@ -199,6 +199,12 @@ contract NFTAuctionMarketplace is ReentrancyGuard, IERC721Receiver {
         // Prevent seller from bidding
         if (msg.sender == auction.seller) revert SellerCannotBid();
 
+        // Refund previous highest bidder, if any
+        if (auction.highestBidder != address(0)) {
+            (bool success,) = auction.highestBidder.call{value: auction.bids[auction.highestBidder]}("");
+            if (!success) revert RefundFailed();
+        }
+
         // Record new bid
         auction.bids[msg.sender] = msg.value;
         auction.highestBid = msg.value;
@@ -209,10 +215,10 @@ contract NFTAuctionMarketplace is ReentrancyGuard, IERC721Receiver {
             auction.endAt = block.timestamp + EXTEND_DURATION;
         }
         // Refund previous highest bidder, if any
-        if (auction.highestBidder != address(0)) {
-            (bool success,) = auction.highestBidder.call{value: auction.bids[auction.highestBidder]}("");
-            if (!success) revert RefundFailed();
-        }
+        // if (auction.highestBidder != address(0)) {
+        // (bool success,) = auction.highestBidder.call{value: auction.bids[auction.highestBidder]}("");
+        //  if (!success) revert RefundFailed();
+        // }
 
         // Emit bid placement event
         emit BidPlaced(_auctionId, msg.sender, msg.value);
