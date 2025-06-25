@@ -208,7 +208,7 @@ contract NFTAuctionMarketplace is ReentrancyGuard, IERC721Receiver {
         if (auction.endAt - block.timestamp < EXTEND_DURATION) {
             auction.endAt = block.timestamp + EXTEND_DURATION;
         }
-     // Refund previous highest bidder, if any
+        // Refund previous highest bidder, if any
         if (auction.highestBidder != address(0)) {
             (bool success,) = auction.highestBidder.call{value: auction.bids[auction.highestBidder]}("");
             if (!success) revert RefundFailed();
