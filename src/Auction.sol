@@ -64,11 +64,6 @@ contract NFTAuctionMarketplace is ReentrancyGuard, IERC721Receiver {
     /// @param bidder The address of the bidder
     /// @param amount The bid amount in wei
     event BidPlaced(uint256 indexed auctionId, address indexed bidder, uint256 amount);
-    /// @notice Emitted when a bid is withdrawn from an auction
-    /// @param auctionId The ID of the auction
-    /// @param bidder The address of the bidder withdrawing their bid
-    /// @param amount The withdrawn bid amount in wei
-    event BidWithdrawn(uint256 indexed auctionId, address indexed bidder, uint256 amount);
     /// @notice Emitted when an auction ends
     /// @param auctionId The ID of the auction
     /// @param winner The address of the winning bidder (or address(0) if no bids)
