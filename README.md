@@ -34,7 +34,6 @@ The **NFTAuctionMarketplace** is a robust, secure, and gas-efficient smart contr
 
 - **Create Auctions:** Sellers can list ERC721 NFTs for auction with a starting bid and duration.
 - **Place Bids:** Bidders can place bids exceeding the current highest bid, with automatic refunds for outbid participants.
-- **Withdraw Bids:** Non-highest bidders can withdraw their bids securely.
 - **End Auctions:** Auctions finalize automatically after the duration, transferring the NFT to the highest bidder and funds to the seller.
 - **Cancel Auctions:** Sellers can cancel auctions without bids, reclaiming their NFT.
 - **Time Extension:** Bids placed in the last 15 minutes extend the auction to prevent sniping.
@@ -139,7 +138,7 @@ forge coverage
 The test suite (`test/Auction.t.sol`) covers:
 
 - Auction creation and validation
-- Bid placement and withdrawal
+- Bid placement 
 - Auction ending with/without bids
 - Auction cancellation
 - Reentrancy protection
@@ -158,11 +157,6 @@ The test suite (`test/Auction.t.sol`) covers:
   Call:  
   `bid(uint256 _auctionId)`  
   (with a value exceeding the current highest bid)
-
-- **Withdraw a Bid:**  
-  Call:  
-  `withdrawBid(uint256 _auctionId)`  
-  (if not the highest bidder)
 
 - **End an Auction:**  
   After the auction duration, call:  
@@ -193,7 +187,7 @@ The test suite (`test/Auction.t.sol`) covers:
 - `EXTEND_DURATION`: 15 minutes (extends auction if bid placed near end)
 
 **Events:**  
-Emitted for auction creation, bid placement, bid withdrawal, auction ending, and cancellation.
+Emitted for auction creation, bid placement, auction ending, and cancellation.
 
 ---
 
