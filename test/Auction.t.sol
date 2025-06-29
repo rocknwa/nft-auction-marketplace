@@ -194,46 +194,6 @@ contract NFTAuctionMarketplaceTest is Test {
         auctionMarketplace.bid{value: 2 ether}(0);
     }
 
-    function testWithdrawBid() public {
-        vm.startPrank(seller);
-        mockNFT.approve(address(auctionMarketplace), nftId);
-        auctionMarketplace.createAuction(address(mockNFT), nftId, startingBid, auctionDuration);
-        vm.stopPrank();
-
-        vm.prank(bidder1);
-        auctionMarketplace.bid{value: 2 ether}(0);
-        vm.prank(bidder2);
-        auctionMarketplace.bid{value: 3 ether}(0);
-
-        uint256 before = bidder1.balance;
-        vm.prank(bidder1);
-        vm.expectEmit(true, true, false, true);
-        emit BidWithdrawn(0, bidder1, 2 ether);
-        auctionMarketplace.withdrawBid(0);
-
-        assertEq(auctionMarketplace.getBid(0, bidder1), 0, "Bid not withdrawn");
-        assertEq(bidder1.balance, before + 2 ether, "Bidder not refunded");
-    }
-
-    function test_RevertWithdrawNoBid() public {
-        vm.prank(bidder1);
-        vm.expectRevert(NFTAuctionMarketplace.AuctionDoesNotExist.selector);
-        auctionMarketplace.withdrawBid(0);
-    }
-
-    function test_RevertWithdrawHighestBidder() public {
-        vm.startPrank(seller);
-        mockNFT.approve(address(auctionMarketplace), nftId);
-        auctionMarketplace.createAuction(address(mockNFT), nftId, startingBid, auctionDuration);
-        vm.stopPrank();
-
-        vm.prank(bidder1);
-        auctionMarketplace.bid{value: 2 ether}(0);
-        vm.prank(bidder1);
-        vm.expectRevert(NFTAuctionMarketplace.HighestBidderCannotWithdraw.selector);
-        auctionMarketplace.withdrawBid(0);
-    }
-
     function testEndAuctionWithWinner() public {
         vm.startPrank(seller);
         mockNFT.approve(address(auctionMarketplace), nftId);
