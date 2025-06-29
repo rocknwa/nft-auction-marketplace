@@ -32,8 +32,6 @@ contract NFTAuctionMarketplace is ReentrancyGuard, IERC721Receiver {
     error RefundFailed();
     /// @notice Thrown when the highest bidder attempts to withdraw their bid
     error HighestBidderCannotWithdraw();
-    /// @notice Thrown when a bidder attempts to withdraw a non-existent bid
-    error NoBidToWithdraw();
     /// @notice Thrown when attempting to end an auction that was never started
     error AuctionNotStarted();
     /// @notice Thrown when attempting to end an auction before its end time
@@ -199,9 +197,11 @@ contract NFTAuctionMarketplace is ReentrancyGuard, IERC721Receiver {
         // Prevent seller from bidding
         if (msg.sender == auction.seller) revert SellerCannotBid();
 
+        uint256 amount = auction.bids[auction.highestBidder];
+        auction.bids[auction.highestBidder] = 0;
         // Refund previous highest bidder, if any
         if (auction.highestBidder != address(0)) {
-            (bool success,) = auction.highestBidder.call{value: auction.bids[auction.highestBidder]}("");
+            (bool success,) = auction.highestBidder.call{value: amount}("");
             if (!success) revert RefundFailed();
         }
 
@@ -214,35 +214,9 @@ contract NFTAuctionMarketplace is ReentrancyGuard, IERC721Receiver {
         if (auction.endAt - block.timestamp < EXTEND_DURATION) {
             auction.endAt = block.timestamp + EXTEND_DURATION;
         }
-        // Refund previous highest bidder, if any
-        // if (auction.highestBidder != address(0)) {
-        // (bool success,) = auction.highestBidder.call{value: auction.bids[auction.highestBidder]}("");
-        //  if (!success) revert RefundFailed();
-        // }
 
         // Emit bid placement event
         emit BidPlaced(_auctionId, msg.sender, msg.value);
-    }
-
-    /// @notice Withdraws a non-highest bid from an auction
-    /// @dev Refunds the bidder and clears their bid
-    /// @param _auctionId The ID of the auction to withdraw from
-    function withdrawBid(uint256 _auctionId) external auctionExists(_auctionId) nonReentrant {
-        Auction storage auction = auctions[_auctionId];
-        // Prevent highest bidder from withdrawing
-        if (msg.sender == auction.highestBidder) {
-            revert HighestBidderCannotWithdraw();
-        }
-        uint256 amount = auction.bids[msg.sender];
-        // Ensure bidder has a bid to withdraw
-        if (amount == 0) revert NoBidToWithdraw();
-
-        // Clear bid and refund bidder
-        auction.bids[msg.sender] = 0;
-        payable(msg.sender).transfer(amount);
-
-        // Emit bid withdrawal event
-        emit BidWithdrawn(_auctionId, msg.sender, amount);
     }
 
     /// @notice Ends an auction and finalizes the outcome
